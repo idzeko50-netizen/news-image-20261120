@@ -40,6 +40,17 @@ def main():
         return 1
 
     size = os.path.getsize(dest)
+    with open(dest, "rb") as handle:
+        magic = handle.read(3)
+    if magic != b"\xff\xd8\xff":
+        print(f"error: output is not a valid JPEG (bad magic bytes): "
+              f"{dest}", file=sys.stderr)
+        return 1
+    if size > 1048576:
+        print(f"error: output exceeds 1 MiB ({size} bytes): {dest}",
+              file=sys.stderr)
+        return 1
+
     print(f"wrote {dest} ({size} bytes, sha256 {dest_hash})")
     return 0
 
